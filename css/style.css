@@ -12,9 +12,16 @@
   --accent: #c3272b;
   --line: #e7e1d6;
   --card-radius: 6px;
-  --serif: "Noto Serif SC", "Source Han Serif SC", "STZhongsong", "STSong", "SimSun", serif;
-  --kai: "KaiTi", "STKaiti", "楷体", var(--serif);
+  --round: "LXGW WenKai Screen", "LXGW WenKai", "KaiTi", "STKaiti", "楷体", serif;
+  --serif: var(--round);
+  --kai: var(--round);
   --sans: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* 变化节奏：整体放缓，过渡更从容 */
+  --t-card: 0.65s;
+  --t-modal: 0.7s;
+  --t-close: 0.45s;
+  --t-color: 0.5s;
+  --t-bg: 1.2s;
 }
 
 * { box-sizing: border-box; }
@@ -22,7 +29,7 @@
 /* hidden 属性优先于任何作者 display 规则 */
 [hidden] { display: none !important; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scrollbar-gutter: stable; }
 
 body {
   margin: 0;
@@ -31,7 +38,7 @@ body {
   font-family: var(--sans);
   font-size: 14px;
   line-height: 1.5;
-  transition: background-color 0.6s ease;
+  transition: background-color var(--t-bg) ease;
 }
 
 .serif { font-family: var(--serif); }
@@ -150,7 +157,7 @@ button { font-family: inherit; }
   padding: 18px 22px;
   border-radius: var(--card-radius);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .hero:hover { transform: scale(1.01); box-shadow: 0 6px 24px rgba(59, 58, 54, 0.18); }
@@ -224,7 +231,7 @@ button { font-family: inherit; }
   padding: 10px;
   border-radius: var(--card-radius);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .card:hover { transform: scale(1.03); box-shadow: 0 6px 18px rgba(59, 58, 54, 0.22); z-index: 1; }
@@ -618,7 +625,7 @@ input[type="range"] {
   border-radius: var(--card-radius);
   text-align: center;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.22s ease;
 }
 
 .sim-item:hover { transform: scale(1.05); }
@@ -770,7 +777,7 @@ input[type="range"] {
 
 /* 色卡瀑布式入场，延迟由 renderWall 内联 --d 控制 */
 .card.enter {
-  animation: card-in 0.38s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  animation: card-in var(--t-card) cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
   animation-delay: var(--d, 0ms);
 }
 
@@ -780,15 +787,15 @@ input[type="range"] {
 
 @keyframes fade-in { from { opacity: 0; } }
 
-.topbar { animation: fade-down 0.4s ease backwards; }
+.topbar { animation: fade-down 0.7s ease backwards; }
 
 .hero {
-  animation: card-in 0.5s 0.08s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
-  transition: background-color 0.35s ease, color 0.35s ease,
-              transform 0.15s ease, box-shadow 0.15s ease;
+  animation: card-in 0.8s 0.15s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  transition: background-color 0.7s ease, color 0.7s ease,
+              transform 0.22s ease, box-shadow 0.22s ease;
 }
 
-.chip { transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
+.chip { transition: background-color 0.35s, color 0.35s, border-color 0.35s; }
 
 /* 弹层：面板弹性浮现 / 遮罩淡入，关闭反向 */
 @keyframes pop-in {
@@ -799,27 +806,27 @@ input[type="range"] {
   to { opacity: 0; transform: translateY(14px) scale(0.96); }
 }
 
-.modal-mask { animation: fade-in 0.22s ease; }
+.modal-mask { animation: fade-in 0.55s ease; }
 
 .modal-panel {
-  animation: pop-in 0.3s cubic-bezier(0.34, 1.4, 0.4, 1);
+  animation: pop-in var(--t-modal) cubic-bezier(0.3, 1.2, 0.35, 1);
 }
 
-.modal.closing .modal-mask { animation: fade-in 0.16s ease reverse forwards; }
-.modal.closing .modal-panel { animation: pop-out 0.18s ease forwards; }
+.modal.closing .modal-mask { animation: fade-in var(--t-close) ease reverse forwards; }
+.modal.closing .modal-panel { animation: pop-out var(--t-close) ease forwards; }
 
 /* 颜色切换的平滑过渡（调色台预览 / 详情大色块 / 相近色块） */
 .mixer-preview,
 .detail-block,
 .near-swatch {
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color var(--t-color) ease, color var(--t-color) ease;
 }
 
 .sim-item {
-  transition: background-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
+  transition: background-color var(--t-color) ease, color var(--t-color) ease, transform 0.22s ease;
 }
 
-.near-item { transition: background-color 0.2s ease; }
+.near-item { transition: background-color 0.4s ease; }
 
 /* toast 滑入（hidden→显示会重启 animation） */
 @keyframes toast-in {
@@ -827,11 +834,11 @@ input[type="range"] {
 }
 
 .toast {
-  animation: toast-in 0.28s cubic-bezier(0.34, 1.3, 0.4, 1);
+  animation: toast-in 0.45s cubic-bezier(0.34, 1.3, 0.4, 1);
 }
 
 /* 手动复制降级面板 */
-.manual-copy { animation: pop-in 0.25s cubic-bezier(0.34, 1.4, 0.4, 1); }
+.manual-copy { animation: pop-in 0.55s cubic-bezier(0.3, 1.2, 0.35, 1); }
 
 /* 系统偏好：减少动效时退化为直切 */
 @media (prefers-reduced-motion: reduce) {
@@ -857,7 +864,7 @@ input[type="range"] {
     overflow-y: auto;
     border-radius: 16px 16px 0 0;
     transform: translateY(105%);
-    transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
     box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
   }
 

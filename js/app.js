@@ -253,8 +253,8 @@ function renderWall() {
   wall.innerHTML = list.map(({ c, i }, pos) => {
     const [r, g, b] = c.rgb;
     const starred = favNames.has(c.name);
-    // 瀑布式入场：前 20 张依次错峰，其余同时浮现，避免 661 张长尾
-    const delay = Math.min(pos, 20) * 22;
+    // 瀑布式入场：前 26 张依次错峰（30ms 步进，约 0.78s 铺开），其余同时浮现
+    const delay = Math.min(pos, 26) * 30;
     return `<div class="card enter" data-i="${i}" tabindex="0" role="button"
          aria-label="${c.name} ${hexUpper(c.hex)}"
          style="--d:${delay}ms;background:${c.hex};color:${textColorFor(r, g, b)}">
@@ -329,7 +329,7 @@ function closeModal(m) {
     delete m.dataset.closing;
     document.body.style.overflow = "";
     if (lastFocused && lastFocused.focus) lastFocused.focus();
-  }, 190);
+  }, 460);
 }
 
 function fmtHsl(rgb) {

@@ -67,6 +67,13 @@ async function shot(page, name) {
     const enterCount = await page.locator(".card.enter").count();
     record("动效", "色卡墙瀑布式入场(带错峰延迟)", enterCount === 661, enterCount);
 
+    // 圆润字体：霞鹜文楷 webfont 加载（失败则回退本机楷体，不阻断）
+    const fontOk = await page.evaluate(async () => {
+      try { await document.fonts.load('20px "LXGW WenKai Screen"', "胭脂月白天水碧竹青黛"); } catch (e) {}
+      return document.fonts.check('20px "LXGW WenKai Screen"');
+    });
+    record("字体", "霞鹜文楷圆润字体加载", fontOk, fontOk ? "LXGW WenKai Screen" : "回退本机楷体");
+
     // 背景联动：悬浮色卡 → 背景=该色调；移出 → 回落调色台当前色(初始=今日一色)
     const mixTint = hex => {
       const paper = [250, 247, 242], a = 0.12;
@@ -84,9 +91,13 @@ async function shot(page, name) {
     record("背景联动", "移出色卡背景回落调色台色", true, await page.evaluate(() => document.body.style.backgroundColor));
     await shot(page, "desktop-home");
 
-    // 今日一色点击 → 详情
+    // 今日一色点击进详情（同时校验弹窗打开页面宽度不变，无滚动条跳动）
+    const widthBefore = await page.evaluate(() => document.documentElement.clientWidth);
     await page.click("#hero");
     await page.waitForSelector("#detailModal:not([hidden])");
+    await page.playwright.waitForTimeout(800); // 等弹窗动画完成、滚动锁生效
+    const widthAfter = await page.evaluate(() => document.documentElement.clientWidth);
+    record("弹窗", "弹窗打开页面宽度不变(滚动条槽位常驻)", widthBefore === widthAfter, `前${widthBefore} 后${widthAfter}`);
     const dName = await page.textContent("#dName");
     record("任务1", "今日一色点击进详情且名称一致", dName.trim() === heroName.trim(), dName);
     await page.keyboard.press("Escape");
